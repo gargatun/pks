@@ -1,0 +1,67 @@
+# Flutter-related files
+*.dart            text eol=lf
+*.yaml            text eol=lf
+*.json            text eol=lf
+*.lock            text eol=lf
+*.gradle          text eol=lf
+*.properties      text eol=lf
+*.sh              text eol=lf
+*.bat             text eol=crlf
+
+# Image files (do not apply text conversion)
+*.png             binary
+*.jpg             binary
+*.jpeg            binary
+*.gif             binary
+*.ico             binary
+
+# Audio files
+*.mp3             binary
+*.wav             binary
+
+# Video files
+*.mp4             binary
+*.mov             binary
+
+# Fonts
+*.ttf             binary
+*.otf             binary
+
+# Protobuf (binary serialization format)
+*.pb              binary
+
+# SQLite databases
+*.db              binary
+
+# Android-specific
+*.jar             binary
+*.keystore        binary
+
+# iOS-specific
+*.xcworkspace/*   text eol=lf
+*.xcodeproj/*     text eol=lf
+*.plist           text eol=lf
+*.h               text eol=lf
+*.m               text eol=lf
+*.mm              text eol=lf
+*.pbxproj         text eol=lf
+*.xcworkspacedata text eol=lf
+*.xcuserdata/*    text eol=lf
+*.xcshareddata/*  text eol=lf
+
+# Ignore lock files
+pubspec.lock      binary
+Podfile.lock      binary
+
+# Shell scripts
+*.sh              text eol=lf
+
+# Windows command scripts
+*.cmd             text eol=crlf
+*.bat             text eol=crlf
+
+# Ensuring correct line endings for text files on different systems
+* text=auto
+
+# Merge driver for Dart files
+*.dart merge=union
