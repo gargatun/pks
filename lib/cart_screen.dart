@@ -1,26 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'cart_model.dart';
 
 class CartScreen extends StatelessWidget {
-  final List<Map<String, dynamic>> cartItems;
-
-  CartScreen({required this.cartItems});
+  const CartScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Корзина"),
+        title: const Text("Корзина"),
       ),
-      body: ListView.builder(
-        itemCount: cartItems.length,
-        itemBuilder: (context, index) {
-          final item = cartItems[index];
-          return Card(
-            child: ListTile(
-              leading: Image.asset(item["image"]),
-              title: Text(item["name"]),
-              subtitle: Text("${item["price"]} руб."),
-            ),
+      body: Consumer<CartModel>(
+        builder: (context, cart, child) {
+          return ListView.builder(
+            itemCount: cart.items.length,
+            itemBuilder: (context, index) {
+              final item = cart.items[index];
+              return Card(
+                child: ListTile(
+                  leading: Image.asset(item["image"]),
+                  title: Text(item["name"]),
+                  subtitle: Text("${item["price"]} руб."),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.remove),
+                    onPressed: () {
+                      cart.removeItem(item);
+                    },
+                  ),
+                ),
+              );
+            },
           );
         },
       ),

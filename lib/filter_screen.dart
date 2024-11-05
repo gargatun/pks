@@ -5,7 +5,8 @@ class FilterScreen extends StatefulWidget {
   final String currentCategory;
   final Function(bool, String) onApplyFilter;
 
-  FilterScreen({
+  const FilterScreen({
+    super.key,
     required this.currentOrganicOnly,
     required this.currentCategory,
     required this.onApplyFilter,
@@ -30,7 +31,7 @@ class _FilterScreenState extends State<FilterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Фильтр продуктов"),
+        title: const Text("Фильтр продуктов"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -51,11 +52,11 @@ class _FilterScreenState extends State<FilterScreen> {
                     });
                   },
                 ),
-                Text("Только органические продукты"),
+                const Text("Только органические продукты"),
               ],
             ),
-            SizedBox(height: 20),
-            Text("Категория:"),
+            const SizedBox(height: 20),
+            const Text("Категория:"),
             ListTile(
               title: const Text('Фрукты'),
               leading: Radio<String>(
@@ -80,13 +81,13 @@ class _FilterScreenState extends State<FilterScreen> {
                 },
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 widget.onApplyFilter(organicOnly, selectedCategory);
                 Navigator.pop(context);
               },
-              child: Text("Применить фильтр"),
+              child: const Text("Применить фильтр"),
             ),
           ],
         ),

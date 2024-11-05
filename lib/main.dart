@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'home_screen.dart';
+import 'cart_model.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => CartModel(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -13,13 +22,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
         brightness: Brightness.light,
-        textTheme: TextTheme(
-          titleLarge: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold, color: Colors.green),
-          bodyMedium: TextStyle(fontSize: 18.0, color: Colors.black87),
-          titleMedium: TextStyle(fontSize: 16.0, color: Colors.black54),
-        ),
       ),
-      home: HomeScreen(),
+      home: const HomeScreen(),
     );
   }
 }

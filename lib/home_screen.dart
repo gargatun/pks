@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'product_screen.dart';
-import 'filter_screen.dart';
+import 'filter_screen.dart' as filter;  // Алиас для экрана фильтрации
 import 'cart_screen.dart';
+import 'cart_model.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final String userName = "Замула";
-  final String userSurname = "Матвей";
+  final String userName = "Матвей";
+  final String userSurname = "Замула";
   final List<Map<String, dynamic>> products = [
     {"name": "Органическое яблоко", "price": 15, "image": "assets/apple.png", "organic": true, "category": "Фрукты"},
     {"name": "Свежий апельсин", "price": 20, "image": "assets/orange.png", "organic": true, "category": "Фрукты"},
     {"name": "Банан", "price": 12, "image": "assets/banana.png", "organic": false, "category": "Фрукты"},
   ];
 
-  final List<Map<String, dynamic>> cartItems = [];
   bool organicOnly = false;
   String selectedCategory = "Фрукты";
 
@@ -40,15 +43,15 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Магазин Здорового Питания"),
+        title: const Text("Магазин Здорового Питания"),
         actions: [
           IconButton(
-            icon: Icon(Icons.filter_list),
+            icon: const Icon(Icons.filter_list),
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => FilterScreen(
+                  builder: (context) => filter.FilterScreen(
                     currentOrganicOnly: organicOnly,
                     currentCategory: selectedCategory,
                     onApplyFilter: applyFilter,
@@ -58,15 +61,34 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             tooltip: 'Фильтр продуктов',
           ),
-          IconButton(
-            icon: Icon(Icons.shopping_cart),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CartScreen(cartItems: cartItems)),
-              );
-            },
-            tooltip: 'Корзина',
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.shopping_cart),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const CartScreen()),
+                  );
+                },
+              ),
+              Positioned(
+                right: 8,
+                top: 8,
+                child: Consumer<CartModel>(
+                  builder: (context, cart, child) {
+                    return CircleAvatar(
+                      radius: 10,
+                      backgroundColor: Colors.red,
+                      child: Text(
+                        '${cart.itemCount}',
+                        style: const TextStyle(color: Colors.white, fontSize: 12),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -85,11 +107,22 @@ class _HomeScreenState extends State<HomeScreen> {
               itemCount: filteredProducts.length,
               itemBuilder: (context, index) {
                 final product = filteredProducts[index];
-                return Card(
+                return Container(
+                  margin: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.green, width: 1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   child: ListTile(
                     leading: Image.asset(product["image"]),
                     title: Text(product["name"]),
                     subtitle: Text("${product["price"]} руб."),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.add),
+                      onPressed: () {
+                        Provider.of<CartModel>(context, listen: false).addItem(product);
+                      },
+                    ),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -97,9 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           builder: (context) => ProductScreen(
                             product: product,
                             addToCart: () {
-                              setState(() {
-                                cartItems.add(product);
-                              });
+                              Provider.of<CartModel>(context, listen: false).addItem(product);
                             },
                           ),
                         ),
