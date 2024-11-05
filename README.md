@@ -10,7 +10,7 @@ ___
 |:---:|---|
 | 1 | [Ссылка на ветку](https://github.com/gargatun/pks/tree/Practice_1) |
 | 2 | [Ссылка на ветку](https://github.com/gargatun/pks/tree/Practice_2) |
-| 3 | [Ссылка на ветку]() |
+| 3 | [Ссылка на ветку](https://github.com/gargatun/pks/tree/Practice_3) |
 | 4 | [Ссылка на ветку]() |
 | 5 | [Ссылка на ветку]() |
 | 6 | [Ссылка на ветку]() |
