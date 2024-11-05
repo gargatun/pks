@@ -8,5 +8,5 @@
 
 ## ✅ Результат
 
-![Video.webm](https://github.com/user-attachments/assets/434f483c-8a5a-47f6-8457-b1ddab9628a8)
+[Video.webm](https://github.com/user-attachments/assets/434f483c-8a5a-47f6-8457-b1ddab9628a8)
 
