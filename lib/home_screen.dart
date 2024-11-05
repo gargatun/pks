@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'product_screen.dart';
+import 'filter_screen.dart';
 import 'cart_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -9,14 +10,31 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final String userName = "Замула";
-  final String userSurname = "Матвей ЭФБО-04-22";
+  final String userSurname = "Матвей";
   final List<Map<String, dynamic>> products = [
-    {"name": "Органическое яблоко", "price": 10, "image": "assets/apple.png"},
-    {"name": "Свежий апельсин", "price": 20, "image": "assets/orange.png"},
-    {"name": "Банан", "price": 12, "image": "assets/banana.png"},
+    {"name": "Органическое яблоко", "price": 15, "image": "assets/apple.png", "organic": true, "category": "Фрукты"},
+    {"name": "Свежий апельсин", "price": 20, "image": "assets/orange.png", "organic": true, "category": "Фрукты"},
+    {"name": "Банан", "price": 12, "image": "assets/banana.png", "organic": false, "category": "Фрукты"},
   ];
 
   final List<Map<String, dynamic>> cartItems = [];
+  bool organicOnly = false;
+  String selectedCategory = "Фрукты";
+
+  void applyFilter(bool organic, String category) {
+    setState(() {
+      organicOnly = organic;
+      selectedCategory = category;
+    });
+  }
+
+  List<Map<String, dynamic>> get filteredProducts {
+    return products.where((product) {
+      final matchesOrganic = !organicOnly || product["organic"] == true;
+      final matchesCategory = product["category"] == selectedCategory;
+      return matchesOrganic && matchesCategory;
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,15 +43,30 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text("Магазин Здорового Питания"),
         actions: [
           IconButton(
-            icon: Icon(Icons.shopping_cart),
+            icon: Icon(Icons.filter_list),
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CartScreen(cartItems: cartItems),
+                  builder: (context) => FilterScreen(
+                    currentOrganicOnly: organicOnly,
+                    currentCategory: selectedCategory,
+                    onApplyFilter: applyFilter,
+                  ),
                 ),
               );
             },
+            tooltip: 'Фильтр продуктов',
+          ),
+          IconButton(
+            icon: Icon(Icons.shopping_cart),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CartScreen(cartItems: cartItems)),
+              );
+            },
+            tooltip: 'Корзина',
           ),
         ],
       ),
@@ -44,14 +77,14 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.all(16.0),
             child: Text(
               "Добро пожаловать, $userName $userSurname",
-              style: Theme.of(context).textTheme.titleLarge, // заменили headline6 на titleLarge
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: products.length,
+              itemCount: filteredProducts.length,
               itemBuilder: (context, index) {
-                final product = products[index];
+                final product = filteredProducts[index];
                 return Card(
                   child: ListTile(
                     leading: Image.asset(product["image"]),
