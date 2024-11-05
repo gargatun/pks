@@ -8,4 +8,5 @@
 
 ## ✅ Результат
 
-![video.mp4](https://github.com/user-attachments/assets/3c3e925b-bc31-4602-96e3-6c4f8ce95526)
+![Video.webm](https://github.com/user-attachments/assets/434f483c-8a5a-47f6-8457-b1ddab9628a8)
+
