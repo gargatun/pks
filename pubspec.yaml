@@ -31,8 +31,9 @@ dependencies:
   flutter:
     sdk: flutter
   provider: ^6.0.0
-
-
+  image_picker: ^1.1.2
+  flutter_plugin_android_lifecycle: ^2.0.5 # Проверьте актуальную версию на pub.dev
+  permission_handler: ^10.2.0 # Если используете для разрешений
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

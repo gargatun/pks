@@ -2,12 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../widgets/product_list_item.dart';  // Исправленный импорт
-import '../widgets/product_grid_item.dart';  // Исправленный импорт
-import 'product_screen.dart';
-import 'filter_screen.dart' as filter;       // Алиас для экрана фильтрации
+import '../widgets/product_list_item.dart';
+import '../widgets/product_grid_item.dart';
+import 'filter_screen.dart' as filter;
 import 'cart_screen.dart';
-import '../models/cart_model.dart';          // Исправленный импорт
+import 'favorites_screen.dart';
+import 'profile_screen.dart';
+import '../models/cart_model.dart';
 
 enum ViewType { list, grid }
 
@@ -19,8 +20,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final String userName = "Матвей";
-  final String userSurname = "Замула";
+  // Личные данные пользователя будут отображаться на профиле
   final List<Map<String, dynamic>> products = [
     {"name": "Органическое яблоко", "price": 15, "image": "assets/apple.png", "organic": true, "category": "Фрукты"},
     {"name": "Свежий апельсин", "price": 20, "image": "assets/orange.png", "organic": true, "category": "Фрукты"},
@@ -30,7 +30,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   bool organicOnly = false;
   String selectedCategory = "Фрукты";
-  ViewType viewType = ViewType.list; // Добавляем состояние для типа представления
+  ViewType viewType = ViewType.list;
+
+  int _selectedIndex = 0;
 
   void applyFilter(bool organic, String category) {
     setState(() {
@@ -45,6 +47,48 @@ class _HomeScreenState extends State<HomeScreen> {
       final matchesCategory = product["category"] == selectedCategory;
       return matchesOrganic && matchesCategory;
     }).toList();
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  Widget _buildHome() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            "Добро пожаловать!",
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
+        Expanded(
+          child: viewType == ViewType.list
+              ? ListView.builder(
+            itemCount: filteredProducts.length,
+            itemBuilder: (context, index) {
+              final product = filteredProducts[index];
+              return ProductListItem(product: product);
+            },
+          )
+              : GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.75,
+            ),
+            itemCount: filteredProducts.length,
+            itemBuilder: (context, index) {
+              final product = filteredProducts[index];
+              return ProductGridItem(product: product);
+            },
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -83,10 +127,9 @@ class _HomeScreenState extends State<HomeScreen> {
               IconButton(
                 icon: const Icon(Icons.shopping_cart),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const CartScreen()),
-                  );
+                  setState(() {
+                    _selectedIndex = 2; // Перейти на вкладку "Корзина"
+                  });
                 },
               ),
               Positioned(
@@ -94,14 +137,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 top: 8,
                 child: Consumer<CartModel>(
                   builder: (context, cart, child) {
-                    return CircleAvatar(
+                    return cart.itemCount > 0
+                        ? CircleAvatar(
                       radius: 10,
                       backgroundColor: Colors.red,
                       child: Text(
                         '${cart.itemCount}',
                         style: const TextStyle(color: Colors.white, fontSize: 12),
                       ),
-                    );
+                    )
+                        : const SizedBox.shrink();
                   },
                 ),
               ),
@@ -109,36 +154,35 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      body: IndexedStack(
+        index: _selectedIndex,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              "Добро пожаловать, $userName $userSurname",
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+          _buildHome(),
+          const FavoritesScreen(),
+          const CartScreen(),
+          const ProfileScreen(),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Главная',
           ),
-          Expanded(
-            child: viewType == ViewType.list
-                ? ListView.builder(
-              itemCount: filteredProducts.length,
-              itemBuilder: (context, index) {
-                final product = filteredProducts[index];
-                return ProductListItem(product: product);
-              },
-            )
-                : GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // Количество колонок в сетке
-                childAspectRatio: 0.75, // Соотношение ширины к высоте
-              ),
-              itemCount: filteredProducts.length,
-              itemBuilder: (context, index) {
-                final product = filteredProducts[index];
-                return ProductGridItem(product: product);
-              },
-            ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Избранное',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart),
+            label: 'Корзина',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Профиль',
           ),
         ],
       ),
