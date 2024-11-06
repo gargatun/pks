@@ -13,7 +13,7 @@ ___
 | 3 | [Ссылка на ветку](https://github.com/gargatun/pks/tree/Practice_3) |
 | 4 | [Ссылка на ветку](https://github.com/gargatun/pks/tree/Practice_4) |
 | 5 | [Ссылка на ветку](https://github.com/gargatun/pks/tree/Practice_5) |
-| 6 | [Ссылка на ветку]() |
+| 6 | [Ссылка на ветку](https://github.com/gargatun/pks/tree/Practice_6) |
 | 7 | [Ссылка на ветку]() |
 | 8 | [Ссылка на ветку]() |
 | 9 | [Ссылка на ветку]() |
