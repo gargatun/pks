@@ -1,11 +1,12 @@
 // lib/screens/filter_screen.dart
 
 import 'package:flutter/material.dart';
+import '../typedefs.dart'; // Импортируем typedef
 
 class FilterScreen extends StatefulWidget {
   final bool currentOrganicOnly;
   final String currentCategory;
-  final Function(bool, String) onApplyFilter;
+  final ApplyFilterCallback onApplyFilter; // Используем typedef
 
   const FilterScreen({
     super.key,

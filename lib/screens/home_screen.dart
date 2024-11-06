@@ -9,6 +9,7 @@ import 'cart_screen.dart';
 import 'favorites_screen.dart';
 import 'profile_screen.dart';
 import '../models/cart_model.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 enum ViewType { list, grid }
 
@@ -20,7 +21,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // Личные данные пользователя будут отображаться на профиле
   final List<Map<String, dynamic>> products = [
     {"name": "Органическое яблоко", "price": 15, "image": "assets/apple.png", "organic": true, "category": "Фрукты"},
     {"name": "Свежий апельсин", "price": 20, "image": "assets/orange.png", "organic": true, "category": "Фрукты"},
@@ -63,28 +63,37 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.all(16.0),
           child: Text(
             "Добро пожаловать!",
-            style: Theme.of(context).textTheme.titleLarge,
+            style: GoogleFonts.openSans(
+              textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ),
         Expanded(
-          child: viewType == ViewType.list
-              ? ListView.builder(
-            itemCount: filteredProducts.length,
-            itemBuilder: (context, index) {
-              final product = filteredProducts[index];
-              return ProductListItem(product: product);
-            },
-          )
-              : GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 0.75,
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            child: viewType == ViewType.list
+                ? ListView.builder(
+              key: const ValueKey<ViewType>(ViewType.list),
+              itemCount: filteredProducts.length,
+              itemBuilder: (context, index) {
+                final product = filteredProducts[index];
+                return ProductListItem(product: product);
+              },
+            )
+                : GridView.builder(
+              key: const ValueKey<ViewType>(ViewType.grid),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 0.75,
+              ),
+              itemCount: filteredProducts.length,
+              itemBuilder: (context, index) {
+                final product = filteredProducts[index];
+                return ProductGridItem(product: product);
+              },
             ),
-            itemCount: filteredProducts.length,
-            itemBuilder: (context, index) {
-              final product = filteredProducts[index];
-              return ProductGridItem(product: product);
-            },
           ),
         ),
       ],
@@ -106,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   builder: (context) => filter.FilterScreen(
                     currentOrganicOnly: organicOnly,
                     currentCategory: selectedCategory,
-                    onApplyFilter: applyFilter,
+                    onApplyFilter: applyFilter, // Используем типизированный колбэк
                   ),
                 ),
               );
@@ -167,6 +176,10 @@ class _HomeScreenState extends State<HomeScreen> {
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
+        selectedItemColor: Colors.green,
+        unselectedItemColor: Colors.grey,
+        selectedLabelStyle: GoogleFonts.openSans(fontWeight: FontWeight.bold),
+        unselectedLabelStyle: GoogleFonts.openSans(),
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),

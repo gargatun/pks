@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/cart_model.dart';
+import 'package:google_fonts/google_fonts.dart'; // Импортируем Google Fonts
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -12,6 +13,7 @@ class CartScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Корзина"),
+        elevation: 0,
       ),
       body: Consumer<CartModel>(
         builder: (context, cart, child) {
@@ -59,24 +61,49 @@ class CartScreen extends StatelessWidget {
                   child: const Icon(Icons.delete, color: Colors.white),
                 ),
                 child: Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   child: ListTile(
-                    leading: Image.asset(item.product["image"]),
-                    title: Text(item.product["name"]),
-                    subtitle: Text("${item.product["price"]} руб."),
+                    leading: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.asset(item.product["image"], width: 50, height: 50, fit: BoxFit.cover),
+                    ),
+                    title: Text(
+                      item.product["name"],
+                      style: GoogleFonts.openSans(
+                        textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    subtitle: Text(
+                      "${item.product["price"]} руб.",
+                      style: GoogleFonts.openSans(
+                        textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.green[700],
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                     trailing: SizedBox(
                       width: 120,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.remove),
+                            icon: const Icon(Icons.remove_circle_outline),
+                            color: Colors.green,
                             onPressed: () {
                               cart.decreaseQuantity(item);
                             },
                           ),
-                          Text('${item.quantity}'),
+                          Text(
+                            '${item.quantity}',
+                            style: GoogleFonts.openSans(fontSize: 16),
+                          ),
                           IconButton(
-                            icon: const Icon(Icons.add),
+                            icon: const Icon(Icons.add_circle_outline),
+                            color: Colors.green,
                             onPressed: () {
                               cart.increaseQuantity(item);
                             },
@@ -96,13 +123,27 @@ class CartScreen extends StatelessWidget {
           double totalPrice = cart.items.fold(0, (sum, item) => sum + item.product["price"] * item.quantity);
           return Container(
             padding: const EdgeInsets.all(16.0),
-            height: 60,
+            height: 80,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 4,
+                  offset: Offset(0, -2),
+                ),
+              ],
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   "Итого: $totalPrice руб.",
-                  style: Theme.of(context).textTheme.titleLarge,
+                  style: GoogleFonts.openSans(
+                    textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -111,6 +152,12 @@ class CartScreen extends StatelessWidget {
                       const SnackBar(content: Text("Функционал оплаты не реализован")),
                     );
                   },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                   child: const Text("Оформить заказ"),
                 ),
               ],

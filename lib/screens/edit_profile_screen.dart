@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../models/user_model.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:google_fonts/google_fonts.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -49,9 +50,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Редактировать профиль"),
+        elevation: 0,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(24.0), // Увеличили отступы
         child: Form(
           key: _formKey,
           child: ListView(
@@ -62,18 +64,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: CircleAvatar(
                     radius: 60,
                     backgroundImage: avatarPath != null
-                        ? FileImage(File(avatarPath!))
-                        : AssetImage(avatarPath!) as ImageProvider,
+                        ? (avatarPath!.startsWith('assets/')
+                        ? AssetImage(avatarPath!) as ImageProvider
+                        : FileImage(File(avatarPath!)))
+                        : const AssetImage('assets/default_avatar.png'),
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
               TextFormField(
                 initialValue: firstName,
                 decoration: const InputDecoration(
                   labelText: 'Имя',
-                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.person),
                 ),
+                style: GoogleFonts.openSans(),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Пожалуйста, введите имя';
@@ -89,8 +94,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 initialValue: lastName,
                 decoration: const InputDecoration(
                   labelText: 'Фамилия',
-                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.person_outline),
                 ),
+                style: GoogleFonts.openSans(),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Пожалуйста, введите фамилию';
@@ -106,9 +112,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 initialValue: phone,
                 decoration: const InputDecoration(
                   labelText: 'Телефон',
-                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.phone),
                 ),
                 keyboardType: TextInputType.phone,
+                style: GoogleFonts.openSans(),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Пожалуйста, введите телефон';
@@ -124,9 +131,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 initialValue: email,
                 decoration: const InputDecoration(
                   labelText: 'Почта',
-                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.email),
                 ),
                 keyboardType: TextInputType.emailAddress,
+                style: GoogleFonts.openSans(),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Пожалуйста, введите почту';

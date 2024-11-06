@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../screens/product_screen.dart';
 import '../models/cart_model.dart';
 import '../models/favorites_model.dart';
+import 'package:google_fonts/google_fonts.dart'; // Импортируем Google Fonts
 
 class ProductListItem extends StatelessWidget {
   final Map<String, dynamic> product;
@@ -16,20 +17,46 @@ class ProductListItem extends StatelessWidget {
     bool isFavorite = Provider.of<FavoritesModel>(context).isFavorite(product);
 
     return Container(
-      margin: const EdgeInsets.all(8),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.green, width: 1),
-        borderRadius: BorderRadius.circular(8),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
       child: ListTile(
-        leading: Image.asset(product["image"], width: 50, height: 50, fit: BoxFit.cover),
-        title: Text(product["name"]),
-        subtitle: Text("${product["price"]} руб."),
+        leading: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Image.asset(product["image"], width: 60, height: 60, fit: BoxFit.cover),
+        ),
+        title: Text(
+          product["name"],
+          style: GoogleFonts.openSans(
+            textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        subtitle: Text(
+          "${product["price"]} руб.",
+          style: GoogleFonts.openSans(
+            textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Colors.green[700],
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
               icon: const Icon(Icons.add),
+              color: Colors.green,
               onPressed: () {
                 Provider.of<CartModel>(context, listen: false).addItem(product);
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -40,7 +67,7 @@ class ProductListItem extends StatelessWidget {
             IconButton(
               icon: Icon(
                 isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: isFavorite ? Colors.red : null,
+                color: isFavorite ? Colors.red : Colors.grey,
               ),
               onPressed: () {
                 if (isFavorite) {
