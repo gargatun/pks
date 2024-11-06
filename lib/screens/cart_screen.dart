@@ -1,6 +1,8 @@
+// lib/screens/cart_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'cart_model.dart';
+import '../models/cart_model.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -13,6 +15,11 @@ class CartScreen extends StatelessWidget {
       ),
       body: Consumer<CartModel>(
         builder: (context, cart, child) {
+          if (cart.items.isEmpty) {
+            return const Center(
+              child: Text("Ваша корзина пуста."),
+            );
+          }
           return ListView.builder(
             itemCount: cart.items.length,
             itemBuilder: (context, index) {

@@ -1,9 +1,15 @@
+// lib/screens/home_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../widgets/product_list_item.dart';  // Исправленный импорт
+import '../widgets/product_grid_item.dart';  // Исправленный импорт
 import 'product_screen.dart';
-import 'filter_screen.dart' as filter;  // Алиас для экрана фильтрации
+import 'filter_screen.dart' as filter;       // Алиас для экрана фильтрации
 import 'cart_screen.dart';
-import 'cart_model.dart';
+import '../models/cart_model.dart';          // Исправленный импорт
+
+enum ViewType { list, grid }
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,10 +25,12 @@ class _HomeScreenState extends State<HomeScreen> {
     {"name": "Органическое яблоко", "price": 15, "image": "assets/apple.png", "organic": true, "category": "Фрукты"},
     {"name": "Свежий апельсин", "price": 20, "image": "assets/orange.png", "organic": true, "category": "Фрукты"},
     {"name": "Банан", "price": 12, "image": "assets/banana.png", "organic": false, "category": "Фрукты"},
+    // Добавьте больше продуктов по необходимости
   ];
 
   bool organicOnly = false;
   String selectedCategory = "Фрукты";
+  ViewType viewType = ViewType.list; // Добавляем состояние для типа представления
 
   void applyFilter(bool organic, String category) {
     setState(() {
@@ -60,6 +68,15 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
             tooltip: 'Фильтр продуктов',
+          ),
+          IconButton(
+            icon: Icon(viewType == ViewType.list ? Icons.grid_view : Icons.list),
+            onPressed: () {
+              setState(() {
+                viewType = viewType == ViewType.list ? ViewType.grid : ViewType.list;
+              });
+            },
+            tooltip: viewType == ViewType.list ? 'Переключиться на сетку' : 'Переключиться на список',
           ),
           Stack(
             children: [
@@ -103,41 +120,23 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
+            child: viewType == ViewType.list
+                ? ListView.builder(
               itemCount: filteredProducts.length,
               itemBuilder: (context, index) {
                 final product = filteredProducts[index];
-                return Container(
-                  margin: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.green, width: 1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: ListTile(
-                    leading: Image.asset(product["image"]),
-                    title: Text(product["name"]),
-                    subtitle: Text("${product["price"]} руб."),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.add),
-                      onPressed: () {
-                        Provider.of<CartModel>(context, listen: false).addItem(product);
-                      },
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ProductScreen(
-                            product: product,
-                            addToCart: () {
-                              Provider.of<CartModel>(context, listen: false).addItem(product);
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                );
+                return ProductListItem(product: product);
+              },
+            )
+                : GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, // Количество колонок в сетке
+                childAspectRatio: 0.75, // Соотношение ширины к высоте
+              ),
+              itemCount: filteredProducts.length,
+              itemBuilder: (context, index) {
+                final product = filteredProducts[index];
+                return ProductGridItem(product: product);
               },
             ),
           ),
