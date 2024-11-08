@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/cart_model.dart';
-import 'package:google_fonts/google_fonts.dart'; // Импортируем Google Fonts
+import 'package:google_fonts/google_fonts.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -27,7 +27,7 @@ class CartScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final item = cart.items[index];
               return Dismissible(
-                key: Key(item.product["name"]),
+                key: Key(item.product.name),
                 direction: DismissDirection.endToStart,
                 confirmDismiss: (direction) async {
                   return await showDialog(
@@ -51,7 +51,7 @@ class CartScreen extends StatelessWidget {
                 onDismissed: (direction) {
                   cart.removeItem(item.product);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('${item.product["name"]} удален(а) из корзины')),
+                    SnackBar(content: Text('${item.product.name} удален(а) из корзины')),
                   );
                 },
                 background: Container(
@@ -66,10 +66,10 @@ class CartScreen extends StatelessWidget {
                   child: ListTile(
                     leading: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(item.product["image"], width: 50, height: 50, fit: BoxFit.cover),
+                      child: Image.network(item.product.image, width: 50, height: 50, fit: BoxFit.cover),
                     ),
                     title: Text(
-                      item.product["name"],
+                      item.product.name,
                       style: GoogleFonts.openSans(
                         textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
@@ -77,7 +77,7 @@ class CartScreen extends StatelessWidget {
                       ),
                     ),
                     subtitle: Text(
-                      "${item.product["price"]} руб.",
+                      "${item.product.price} руб.",
                       style: GoogleFonts.openSans(
                         textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Colors.green[700],
@@ -120,7 +120,7 @@ class CartScreen extends StatelessWidget {
       ),
       bottomNavigationBar: Consumer<CartModel>(
         builder: (context, cart, child) {
-          double totalPrice = cart.items.fold(0, (sum, item) => sum + item.product["price"] * item.quantity);
+          double totalPrice = cart.items.fold(0, (sum, item) => sum + item.product.price * item.quantity);
           return Container(
             padding: const EdgeInsets.all(16.0),
             height: 80,

@@ -3,12 +3,20 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/favorites_model.dart';
+import '../models/product_model.dart';
+import '../models/cart_model.dart';
 
 class ProductScreen extends StatelessWidget {
-  final Map<String, dynamic> product;
-  final VoidCallback addToCart;
+  final Product product;
 
-  const ProductScreen({super.key, required this.product, required this.addToCart});
+  const ProductScreen({super.key, required this.product});
+
+  void addToCart(BuildContext context) {
+    Provider.of<CartModel>(context, listen: false).addItem(product);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${product.name} добавлен(а) в корзину')),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +24,7 @@ class ProductScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(product["name"]),
+        title: Text(product.name),
         actions: [
           IconButton(
             icon: Icon(
@@ -37,20 +45,20 @@ class ProductScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Image.asset(product["image"], height: 200, fit: BoxFit.cover),
+            Image.network(product.image, height: 200, fit: BoxFit.cover),
             const SizedBox(height: 20),
             Text(
-              product["name"],
+              product.name,
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 10),
             Text(
-              "${product["price"]} руб.",
+              "${product.price} руб.",
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.green),
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
-              onPressed: addToCart,
+              onPressed: () => addToCart(context),
               icon: const Icon(Icons.add_shopping_cart),
               label: const Text("Добавить в корзину"),
             ),

@@ -31,6 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   provider: ^6.0.0
+  http: ^1.2.2
   image_picker: ^1.1.2
   google_fonts: ^5.0.0
   flutter_plugin_android_lifecycle: ^2.0.5 # Проверьте актуальную версию на pub.dev

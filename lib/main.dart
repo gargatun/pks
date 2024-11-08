@@ -7,6 +7,7 @@ import 'screens/home_screen.dart';
 import 'models/cart_model.dart';
 import 'models/user_model.dart';
 import 'models/favorites_model.dart';
+import 'navigator_key.dart'; // Импортируем navigatorKey
 
 void main() {
   runApp(
@@ -27,6 +28,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey, // Используем глобальный navigatorKey
+      debugShowCheckedModeBanner: false,
       title: 'Магазин Здорового Питания',
       theme: ThemeData(
         primarySwatch: Colors.green,

@@ -1,53 +1,108 @@
 // lib/models/cart_model.dart
 
 import 'package:flutter/material.dart';
+import '../models/product_model.dart';
+import '../services/api_service.dart';
+import '../navigator_key.dart'; // Импортируем navigatorKey
 
 class CartItem {
-  final Map<String, dynamic> product;
+  final Product product;
   int quantity;
 
   CartItem({required this.product, this.quantity = 1});
+
+  factory CartItem.fromJson(Map<String, dynamic> json) {
+    return CartItem(
+      product: Product.fromJson(json['product']),
+      quantity: json['quantity'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'product': product.toJson(),
+      'quantity': quantity,
+    };
+  }
 }
 
 class CartModel extends ChangeNotifier {
-  final List<CartItem> _items = [];
+  List<CartItem> _items = [];
 
   List<CartItem> get items => _items;
 
-  void addItem(Map<String, dynamic> product) {
-    for (var item in _items) {
-      if (item.product["name"] == product["name"]) {
-        item.quantity += 1;
-        notifyListeners();
-        return;
-      }
+  Future<void> fetchCartItems() async {
+    try {
+      _items = await ApiService.getAllCartItems();
+      notifyListeners();
+    } catch (e) {
+      // Обработка ошибок
+      print(e);
+      ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+        SnackBar(content: Text('Ошибка при получении корзины: $e')),
+      );
     }
-    _items.add(CartItem(product: product));
-    notifyListeners();
   }
 
-  void removeItem(Map<String, dynamic> product) {
-    _items.removeWhere((item) => item.product["name"] == product["name"]);
-    notifyListeners();
-  }
-
-  void clearCart() {
-    _items.clear();
-    notifyListeners();
-  }
-
-  void increaseQuantity(CartItem item) {
-    item.quantity += 1;
-    notifyListeners();
-  }
-
-  void decreaseQuantity(CartItem item) {
-    if (item.quantity > 1) {
-      item.quantity -= 1;
-    } else {
-      _items.remove(item);
+  void addItem(Product product) async {
+    try {
+      print('Adding product to cart: ${product.toJson()}');
+      await ApiService.addToCart(product.id!, 1);
+      await fetchCartItems();
+      ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+        SnackBar(content: Text('${product.name} добавлен(а) в корзину')),
+      );
+    } catch (e) {
+      print('Error in addItem: $e');
+      ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+        SnackBar(content: Text('Ошибка при добавлении в корзину: $e')),
+      );
     }
-    notifyListeners();
+  }
+
+  void removeItem(Product product) async {
+    try {
+      await ApiService.removeFromCart(product.id!);
+      await fetchCartItems();
+      ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+        SnackBar(content: Text('${product.name} удален(а) из корзины')),
+      );
+    } catch (e) {
+      print(e);
+      ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+        SnackBar(content: Text('Ошибка при удалении из корзины: $e')),
+      );
+    }
+  }
+
+  void increaseQuantity(CartItem item) async {
+    try {
+      await ApiService.increaseCartItem(item.product.id!);
+      await fetchCartItems();
+      ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+        SnackBar(content: Text('Количество ${item.product.name} увеличено')),
+      );
+    } catch (e) {
+      print(e);
+      ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+        SnackBar(content: Text('Ошибка при увеличении количества: $e')),
+      );
+    }
+  }
+
+  void decreaseQuantity(CartItem item) async {
+    try {
+      await ApiService.decreaseCartItem(item.product.id!);
+      await fetchCartItems();
+      ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+        SnackBar(content: Text('Количество ${item.product.name} уменьшено')),
+      );
+    } catch (e) {
+      print(e);
+      ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+        SnackBar(content: Text('Ошибка при уменьшении количества: $e')),
+      );
+    }
   }
 
   int get itemCount => _items.fold(0, (sum, item) => sum + item.quantity);

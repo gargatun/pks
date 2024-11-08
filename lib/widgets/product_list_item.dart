@@ -5,10 +5,11 @@ import 'package:provider/provider.dart';
 import '../screens/product_screen.dart';
 import '../models/cart_model.dart';
 import '../models/favorites_model.dart';
-import 'package:google_fonts/google_fonts.dart'; // Импортируем Google Fonts
+import '../models/product_model.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ProductListItem extends StatelessWidget {
-  final Map<String, dynamic> product;
+  final Product product;
 
   const ProductListItem({super.key, required this.product});
 
@@ -32,10 +33,10 @@ class ProductListItem extends StatelessWidget {
       child: ListTile(
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child: Image.asset(product["image"], width: 60, height: 60, fit: BoxFit.cover),
+          child: Image.network(product.image, width: 60, height: 60, fit: BoxFit.cover),
         ),
         title: Text(
-          product["name"],
+          product.name,
           style: GoogleFonts.openSans(
             textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
@@ -43,7 +44,7 @@ class ProductListItem extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          "${product["price"]} руб.",
+          "${product.price} руб.",
           style: GoogleFonts.openSans(
             textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Colors.green[700],
@@ -60,7 +61,7 @@ class ProductListItem extends StatelessWidget {
               onPressed: () {
                 Provider.of<CartModel>(context, listen: false).addItem(product);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('${product["name"]} добавлен(а) в корзину')),
+                  SnackBar(content: Text('${product.name} добавлен(а) в корзину')),
                 );
               },
             ),
@@ -85,12 +86,6 @@ class ProductListItem extends StatelessWidget {
             MaterialPageRoute(
               builder: (context) => ProductScreen(
                 product: product,
-                addToCart: () {
-                  Provider.of<CartModel>(context, listen: false).addItem(product);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('${product["name"]} добавлен(а) в корзину')),
-                  );
-                },
               ),
             ),
           );

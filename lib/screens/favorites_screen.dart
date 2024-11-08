@@ -12,12 +12,17 @@ class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({super.key});
 
   @override
-  _FavoritesScreenState createState() => _FavoritesScreenState();
+  FavoritesScreenState createState() => FavoritesScreenState();
 }
 
-class _FavoritesScreenState extends State<FavoritesScreen> {
+class FavoritesScreenState extends State<FavoritesScreen> {
   ViewType viewType = ViewType.grid;
 
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<FavoritesModel>(context, listen: false).fetchFavorites();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

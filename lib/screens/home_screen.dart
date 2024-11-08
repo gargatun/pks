@@ -9,6 +9,9 @@ import 'cart_screen.dart';
 import 'favorites_screen.dart';
 import 'profile_screen.dart';
 import '../models/cart_model.dart';
+import '../models/product_model.dart';
+import '../services/api_service.dart';
+import 'add_product_screen.dart'; // Импортируем экран добавления продукта
 import 'package:google_fonts/google_fonts.dart';
 
 enum ViewType { list, grid }
@@ -17,16 +20,11 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  HomeScreenState createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  final List<Map<String, dynamic>> products = [
-    {"name": "Органическое яблоко", "price": 15, "image": "assets/apple.png", "organic": true, "category": "Фрукты"},
-    {"name": "Свежий апельсин", "price": 20, "image": "assets/orange.png", "organic": true, "category": "Фрукты"},
-    {"name": "Банан", "price": 12, "image": "assets/banana.png", "organic": false, "category": "Фрукты"},
-    // Добавьте больше продуктов по необходимости
-  ];
+class HomeScreenState extends State<HomeScreen> {
+  List<Product> products = [];
 
   bool organicOnly = false;
   String selectedCategory = "Фрукты";
@@ -34,17 +32,38 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int _selectedIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    fetchProducts();
+  }
+
   void applyFilter(bool organic, String category) {
     setState(() {
       organicOnly = organic;
       selectedCategory = category;
     });
+    fetchProducts();
   }
 
-  List<Map<String, dynamic>> get filteredProducts {
+  Future<void> fetchProducts() async {
+    try {
+      List<Product> fetchedProducts = await ApiService.getAllProducts(
+        organicOnly: organicOnly,
+        category: selectedCategory,
+      );
+      setState(() {
+        products = fetchedProducts;
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  List<Product> get filteredProducts {
     return products.where((product) {
-      final matchesOrganic = !organicOnly || product["organic"] == true;
-      final matchesCategory = product["category"] == selectedCategory;
+      final matchesOrganic = !organicOnly || product.organic == true;
+      final matchesCategory = product.category == selectedCategory;
       return matchesOrganic && matchesCategory;
     }).toList();
   }
@@ -130,6 +149,20 @@ class _HomeScreenState extends State<HomeScreen> {
               });
             },
             tooltip: viewType == ViewType.list ? 'Переключиться на сетку' : 'Переключиться на список',
+          ),
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () async {
+              bool? result = await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AddProductScreen()),
+              );
+              if (result == true) {
+                // Если продукт был добавлен, обновить список
+                fetchProducts();
+              }
+            },
+            tooltip: 'Добавить продукт',
           ),
           Stack(
             children: [
